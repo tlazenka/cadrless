@@ -4,16 +4,14 @@
 
 (deftest parse-test
   (testing "parse"
-    (let [example (clojure.string/join "\n" [
-                                             "(set i 0)"
+    (let [example (clojure.string/join "\n" ["(set i 0)"
                                              "(while (<= i 3)"
                                              "  (write i)"
                                              "  (set j 500)"
                                              "  (while (<= j 503)"
                                              "    (write j)"
                                              "    (set j (+ j 1)))"
-                                             "  (set i (+ i 1)))"
-                                             ])
+                                             "  (set i (+ i 1)))"])
           expected-tokens [[:open] [:symbol "set"] [:symbol "i"] [:int 0] [:close]
                            [:open] [:symbol "while"] [:open] [:symbol "<="] [:symbol "i"] [:int 3] [:close]
                            [:open] [:symbol "write"] [:symbol "i"] [:close]

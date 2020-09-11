@@ -8,3 +8,11 @@ services:
       - .:/app
     working_dir: /app
     command: lein test
+  format:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: clojure -A:lint:lint/fix
