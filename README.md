@@ -10,4 +10,4 @@
 
 # Acknowledgements
 
-See [LICENSE-THIRD-PARTY](LICENSE-THIRD-PARTY).
+See the [LICENSE](LICENSE).

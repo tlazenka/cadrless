@@ -10,10 +10,10 @@
         (case type
           :symbol
           (if (is-symbol-character ch) [(conj acc ch) {:action :tokenizing :type :symbol}]
-                                       [[:symbol (apply str acc)] {:action :looking}])
+              [[:symbol (apply str acc)] {:action :looking}])
           :int
           (if (Character/isDigit ch) [(conj acc ch) {:action :tokenizing :type :int}]
-                                     [[:int (Integer/parseInt (apply str acc))] {:action :looking}])
+              [[:int (Integer/parseInt (apply str acc))] {:action :looking}])
 
           :list
           (case acc
@@ -71,9 +71,9 @@
         (let [[n, ts'] (nestOne ts [])]
           (nestOne ts', (conj ns n)))
         :symbol
-        (nestOne ts, (conj ns { :symbol value }))
+        (nestOne ts, (conj ns {:symbol value}))
         :int
-        (nestOne ts, (conj ns { :int value }))
+        (nestOne ts, (conj ns {:int value}))
         :close
         [{:list ns}, ts]))))
 
@@ -118,8 +118,7 @@
           [:binOp :lte (parse (first rest)) (parse (second rest))]
           (= (get n :symbol) "while")
           (let [[a & bs] rest]
-            [:while (parse a) (reduce-right #(vector :seq %1 %2) (map parse bs))])
-          )))))
+            [:while (parse a) (reduce-right #(vector :seq %1 %2) (map parse bs))]))))))
 
 (defn evalOp [op, a, b]
   (case op
@@ -137,43 +136,41 @@
      (and (map? expression) (contains? expression :get))
      [(get vars (:get expression)) vars]
      (and
-       (coll? expression)
-       (= (first expression) :seq))
+      (coll? expression)
+      (= (first expression) :seq))
      (let [e1 (second expression)
            e2 (second (rest expression))
            [_ vars'] (evaluation vars e1)]
        (evaluation vars' e2))
      (and
-       (coll? expression)
-       (= (first expression) :binOp))
+      (coll? expression)
+      (= (first expression) :binOp))
      (let [[_ op e1 e2] expression
            [val1, vars'] (evaluation vars e1)
            [val2, vars''] (evaluation vars' e2)]
        [(evalOp op val1 val2) vars''])
      (and
-       (coll? expression)
-       (= (first expression) :while))
+      (coll? expression)
+      (= (first expression) :while))
      (let [[_ c e] expression
            [cond vars'] (evaluation vars c)]
        (if (= cond 0)
          [0, vars']
          (let [[_ vars''] (evaluation vars' e)]
-           (evaluation vars'' [:while c e])
-           )
-         ))
+           (evaluation vars'' [:while c e]))))
+
      (and
-       (coll? expression)
-       (= (first expression) :set))
+      (coll? expression)
+      (= (first expression) :set))
      (let [variable (second expression)
            e (second (rest expression))
            [value, vars'] (evaluation vars e)]
        [value (assoc vars' variable value)])
      (and
-       (coll? expression)
-       (= (first expression) :writeInt))
+      (coll? expression)
+      (= (first expression) :writeInt))
      (let [intE (first (rest expression))
-           [i vars'] (evaluation vars intE)
-           ]
+           [i vars'] (evaluation vars intE)]
        (println i)
        [i vars']))))
 
